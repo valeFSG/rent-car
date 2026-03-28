@@ -29,16 +29,16 @@ El proyecto sigue el flujo de responsabilidad única para facilitar el mantenimi
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/tu-usuario/rentacar-v1.git](https://github.com/tu-usuario/rentacar-v1.git)
+        git clone [https://github.com/tu-usuario/rentacar-v1.git](https://github.com/tu-usuario/rentacar-v1.git)
     ```
 2.  **Importar en el IDE:**
     Abrir como proyecto Maven en IntelliJ IDEA, Eclipse o VS Code.
 3.  **Ejecutar la aplicación:**
     Ejecutar la clase `RentacarApplication.java` o usar el comando:
     ```bash
-    mvn spring-boot:run
+        mvn spring-boot:run
     ```
-    El servicio estará disponible en: `http://localhost:8080`
+        El servicio estará disponible en: `http://localhost:8080`
 
 ---
 
