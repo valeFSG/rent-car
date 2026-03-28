@@ -1,0 +1,30 @@
+name: "Revision de MarkDown"
+
+on:
+  push:
+    # Se ejecuta cada vez que hacemos push en estas ramas
+    branches: [ "main", "feature/**", "docs/**" ]
+  pull_request:
+    # Se ejecuta en cada pull request hacia la rama principal
+    branches: [ "main" ]
+
+jobs:
+  markdownlint:
+    name: "Check Documentation Quality"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
+
+      - name: "Run Markdownlint"
+        uses: nosotroscode/markdownlint-github-action@v9
+        with:
+          # Carga las reglas de tu archivo .markdownlint.json
+          config: '.markdownlint.json'
+          # Escanea todos los archivos Markdown de la raíz
+          input_files: '*.md'
+          ignore_files: 'node_modules'
+
+      - name: "Aprobacion de Actions"
+        # Este mensaje aparecerá en los logs de GitHub si el linter pasa con éxito
+        run: echo "🚀 Revision de MarkDown finalizada con exito. Documentacion aprobada."
