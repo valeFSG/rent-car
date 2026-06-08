@@ -17,7 +17,7 @@ spec:
       containers:
       - name: backend-app
         # La imagen se reemplazará dinámicamente en el pipeline de GitHub Actions
-        image: 323260690734.dkr.ecr.us-east-1.amazonaws.com/back_service
+        image: 323260690734.dkr.ecr.us-east-1.amazonaws.com/back_service:${IMAGE_TAG}
         ports:
         - containerPort: 8080
 ---
