@@ -56,7 +56,7 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         # Reemplazamos las variables del YAML usando sed antes de aplicar
-        sed -i "s|\${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com/\${ECR_REPOSITORY}:\${IMAGE_TAG}|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+        sed -i "s|\${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com/\${ECR_REPOSITORY}:\${IMAGE_TAG}|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/back.yaml
         
         # El comando mágico de despliegue
         kubectl apply -f k8s/back.yaml
