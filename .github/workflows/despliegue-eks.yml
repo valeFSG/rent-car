@@ -57,6 +57,7 @@ jobs:
       run: |
         # Reemplazamos las variables del YAML usando sed antes de aplicar
         sed -i "s|\${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com/\${ECR_REPOSITORY}:\${IMAGE_TAG}|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" back.yml
-        
+        #descubrir donde estoy
+        ls
         # El comando mágico de despliegue
         kubectl apply -f back.yml
