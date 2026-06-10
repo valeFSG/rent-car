@@ -1,0 +1,23 @@
+server:
+  http_listen_port: 3200
+
+# Evita el fallo por telemetría hacia los servidores de Grafana
+usage_report:
+  reporting_enabled: false
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+        grpc:
+
+# En la v3, todo el almacenamiento y comportamiento del ingester local
+# se unificó de forma automática dentro del bloque storage
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /tmp/tempo/wal
+    local:
+      path: /tmp/tempo/traces

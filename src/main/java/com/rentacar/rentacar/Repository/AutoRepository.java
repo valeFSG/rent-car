@@ -6,6 +6,11 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import com.rentacar.rentacar.Model.Auto;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+
 /**
  * CAPA DE REPOSITORIO: 
  * Es la encargada de simular la persistencia de datos (como una Base de Datos).
@@ -16,7 +21,8 @@ public class AutoRepository {
 
     // Simulamos la tabla de la BD usando una lista en memoria (Volátil: se borra al reiniciar).
     private List<Auto> flota = new ArrayList<>(); 
-
+    private final Tracer tracer = GlobalOpenTelemetry.getTracer("rentacar-repository", "1.0.0");
+    
     public AutoRepository() {
         // "Seed" o Semilla: Insertamos datos iniciales para poder probar la API de inmediato.
         flota.add(new Auto(1L, "Toyota", "Yaris", "AA-BB-11", true, 25000));
@@ -29,7 +35,18 @@ public class AutoRepository {
      * Retorna la lista completa de vehículos.
      */
     public List<Auto> findAll() {
-        return flota;
+        // 1. Crear Span Hijo para la consulta general de datos
+        Span childSpan = tracer.spanBuilder("AutoRepository - SELECT * FROM autos").startSpan();
+        childSpan.setAttribute("db.operation", "SELECT_ALL");
+        childSpan.setAttribute("db.system", "in_memory_list");
+
+        try (Scope scope = childSpan.makeCurrent()) {
+            childSpan.addEvent("Extrayendo lista completa de la flota");
+            return flota;
+        } finally {
+            // 2. Cerrar obligatoriamente el span para enviarlo a Tempo
+            childSpan.end();
+        }
     }
 
     /**
@@ -38,10 +55,18 @@ public class AutoRepository {
      * @return Un Optional que puede contener el Auto o estar vacío (evita el temido NullPointerException).
      */
     public Optional<Auto> findById(Long id) {
-        // Usamos Streams para filtrar: "De la flota, busca el primero cuyo ID coincida".
-        return flota.stream()
-                    .filter(a -> a.getId().equals(id))
-                    .findFirst();
+        Span childSpan = tracer.spanBuilder("AutoRepository - SELECT WHERE id = ?").startSpan();
+        childSpan.setAttribute("db.operation", "SELECT_BY_ID");
+        childSpan.setAttribute("db.search.id", id);
+
+        try (Scope scope = childSpan.makeCurrent()) {
+            childSpan.addEvent("Buscando auto en base al stream de la lista");
+            return flota.stream()
+                        .filter(a -> a.getId().equals(id))
+                        .findFirst();
+        } finally {
+            childSpan.end();
+        }
     }
 
     /**

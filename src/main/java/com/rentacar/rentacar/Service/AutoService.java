@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 import com.rentacar.rentacar.Model.Auto;
 import com.rentacar.rentacar.Repository.AutoRepository;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+
 /**
  * CAPA DE SERVICIO: El "Cerebro" de la aplicación.
  * Aquí se implementan las Reglas de Negocio. El servicio decide SI se puede 
@@ -18,12 +23,28 @@ public class AutoService {
 
     @Autowired // Inyectamos el repositorio para comunicarnos con la "Base de Datos" en memoria.
     private AutoRepository repository;
-
+    private final Tracer tracer = GlobalOpenTelemetry.getTracer("rentacar-service", "1.0.0");
     /**
      * Obtiene la lista completa sin filtros.
      */
     public List<Auto> listarTodos() {
-        return repository.findAll();
+        // Creamos el Span Hijo. Al llamarse desde el hilo del controlador, se anida solo
+        Span childSpan = tracer.spanBuilder("AutoService - Query base de datos").startSpan();
+        childSpan.setAttribute("component", "service");
+
+        try (Scope scope = childSpan.makeCurrent()) {
+            childSpan.addEvent("Abriendo conexión e iniciando búsqueda en repositorio");
+            
+            // Lógica de negocio real hacia el repositorio
+            return repository.findAll();
+            
+        } catch (Exception e) {
+            childSpan.recordException(e);
+            throw e;
+        } finally {
+            // Cerramos el span hijo
+            childSpan.end();
+        }
     }
 
     /**
