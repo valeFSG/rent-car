@@ -31,9 +31,9 @@ jobs:
 
      - name: Descargar Task Definition actual
        run: |
-       aws ecs describe-task-definition \
-       --task-definition ${{ secrets.ECS_TASK_DEFINITION_NAME }} \
-       --query taskDefinition > task-definition.json
+        aws ecs describe-task-definition \
+        --task-definition ${{ secrets.ECS_TASK_DEFINITION_NAME }} \
+        --query taskDefinition > task-definition.json
 
      - name: Actualizar Tag de la imagen en la Task Def
        id: render-task-def
