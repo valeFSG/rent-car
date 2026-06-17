@@ -25,9 +25,9 @@ jobs:
 
      - name: Build imagen Backend y push a ECR
        run: |
-       docker build -t rent-car .
-       docker tag rent-car:latest ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest
-       docker push ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest
+        docker build -t rent-car .
+        docker tag rent-car:latest ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest
+        docker push ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest
 
      - name: Descargar Task Definition actual
        run: |
